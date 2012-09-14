@@ -168,11 +168,11 @@ namespace Raven.Client.AspNetProviders
                                    select new
                                    {
                                        user.ApplicationName,
-                                       user.Username
+                                       user.Email
                                    },
                     Indexes = 
                     {
-                        { x => x.Username, FieldIndexing.Analyzed } 
+                        { x => x.Email, FieldIndexing.Analyzed } 
                     }
                 });
         }
