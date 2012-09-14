@@ -52,8 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Indexes\Users_ByApplicationNameAndRoleName.cs" />
-    <Compile Include="Indexes\Users_ByApplicationNameAndEmail.cs" />
-    <Compile Include="Indexes\Users_ByApplicationNameAndUsername.cs" />
     <Compile Include="RavenMembershipProvider.cs" />
     <Compile Include="RavenProfileProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

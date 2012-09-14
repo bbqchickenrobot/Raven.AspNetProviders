@@ -53,7 +53,7 @@ namespace Raven.Client.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var users = session.Query<User, Users_ByApplicationNameAndUsername>()
+                var users = session.Query<User>("Users/ByApplicationNameAndUsername")
                     .Where(x => x.ApplicationName == ApplicationName && x.Username.In(usernames));
 
                 foreach (var user in users)
@@ -127,7 +127,7 @@ namespace Raven.Client.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var users = session.Query<User, Users_ByApplicationNameAndUsername>()
+                var users = session.Query<User>("Users/ByApplicationNameAndUsername")
                     .Where(x => x.ApplicationName == ApplicationName && x.Roles.Contains(roleName))
                     .Search(x => x.Username, usernameToMatch)
                     .Select(x => x.Username);
@@ -149,7 +149,7 @@ namespace Raven.Client.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                return session.Query<User, Users_ByApplicationNameAndUsername>()
+                return session.Query<User>("Users/ByApplicationNameAndUsername")
                     .Where(x => x.ApplicationName == ApplicationName && x.Username == username)
                     .SelectMany(x => x.Roles)
                     .ToArray();
@@ -160,7 +160,7 @@ namespace Raven.Client.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                return session.Query<User, Users_ByApplicationNameAndUsername>()
+                return session.Query<User>("Users/ByApplicationNameAndUsername")
                     .Where(x => x.ApplicationName == ApplicationName)
                     .Select(x => x.Username)
                     .ToArray();
@@ -171,7 +171,7 @@ namespace Raven.Client.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
+                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
                     .SingleOrDefault(x => x.ApplicationName == ApplicationName && x.Username == username);
                 return user != null && user.Roles.Contains(roleName);
             }
@@ -181,7 +181,7 @@ namespace Raven.Client.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var users = session.Query<User, Users_ByApplicationNameAndUsername>()
+                var users = session.Query<User>("Users/ByApplicationNameAndUsername")
                     .Where(x => x.ApplicationName == ApplicationName && x.Username.In(usernames));
 
                 foreach (var user in users)

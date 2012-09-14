@@ -56,20 +56,7 @@ namespace Raven.Client.AspNetProviders
 
         public override int DeleteProfiles(string[] usernames)
         {
-            using (var session = _documentStore.OpenSession())
-            {
-                var users = session.Query<User, Users_ByApplicationNameAndUsername>()
-                    .Where(x => x.ApplicationName == ApplicationName && usernames.Contains(x.Username));
-
-                foreach (var user in users)
-                {
-                    user.Profile = null;
-                }
-
-                session.SaveChanges();
-
-                return users.Count();
-            }
+            throw new NotImplementedException();
         }
 
         public override int DeleteProfiles(ProfileInfoCollection profiles)
