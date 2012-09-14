@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>@ViewBag.Title - RavenDB AspNetProviders Demo</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        @Styles.Render("~/Content/bootstrap")
+        @Styles.Render("~/Content/Style")
+    </head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="#">RavenDB AspNetProviders</a>
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li>@Html.ActionLink("Home","Index")</li>
+                </ul>
+                <p class="navbar-text pull-right">
+                    <a class="navbar-link" href="@Url.Action("Login", "User")">Login</a> / 
+                    <a class="navbar-link" href="@Url.Action("Register", "User")">Register</a>
+                </p>
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+    </div>
+
+    <div class="container">
+        @RenderBody()
+    </div> <!-- /container -->
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

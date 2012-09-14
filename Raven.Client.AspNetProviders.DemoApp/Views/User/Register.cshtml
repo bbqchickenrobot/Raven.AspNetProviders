@@ -1,0 +1,41 @@
+﻿@model Raven.Client.AspNetProviders.DemoApp.Models.RegisterModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<div class="row">
+    <div class="span6 offset3">
+        @using (Html.BeginForm("Register", "User", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+            <fieldset>
+                <legend>Registration Form</legend>
+
+                <div class="control-group">
+                    @Html.LabelFor(m => m.UserName, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.UserName, new { placeholder = "User name" })
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(m => m.Password, new { placeholder = "Password" })
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { placeholder = "Confirm password" })
+                    </div>
+                </div>
+                
+                <input type="submit" value="Register" class="btn" />
+            </fieldset>
+        }
+    </div>
+</div>
