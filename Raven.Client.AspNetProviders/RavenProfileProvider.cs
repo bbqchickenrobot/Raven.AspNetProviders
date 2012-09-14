@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
 using System.Web.Profile;
-using Raven.Client.AspNetProviders.Indexes;
 using Raven.Client.Document;
 
 namespace Raven.Client.AspNetProviders

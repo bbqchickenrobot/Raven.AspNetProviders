@@ -6,8 +6,9 @@ using System.Configuration.Provider;
 using System.Linq;
 using System.Web.Security;
 using Raven.Abstractions.Data;
-using Raven.Client.AspNetProviders.Indexes;
+using Raven.Abstractions.Indexing;
 using Raven.Client.Document;
+using Raven.Client.Indexes;
 using Raven.Client.Linq;
 
 namespace Raven.Client.AspNetProviders
@@ -42,11 +43,31 @@ namespace Raven.Client.AspNetProviders
 
                 _documentStore.Initialize();
             }
+
+            if (_documentStore.DatabaseCommands.GetIndex("Users/ByApplicationNameAndRoleName") == null)
+            {
+                CreateRavenDbIndexes();
+            }
         }
 
         private void SetConfigurationProperties(NameValueCollection config)
         {
             ApplicationName = string.IsNullOrEmpty(config["applicationName"]) ? System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath : config["applicationName"];
+        }
+
+        private void CreateRavenDbIndexes()
+        {
+            _documentStore.DatabaseCommands.PutIndex("Users/ByApplicationNameAndRoleName",
+                new IndexDefinitionBuilder<User>
+                {
+                    Map = users => from user in users
+                                   from role in user.Roles
+                                   select new
+                                   {
+                                       user.ApplicationName,
+                                       RoleName = role
+                                   }
+                });
         }
 
         public override void AddUsersToRoles(string[] usernames, string[] roleNames)

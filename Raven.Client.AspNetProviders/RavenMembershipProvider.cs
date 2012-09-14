@@ -1,7 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Raven.Abstractions.Exceptions;
 using Raven.Abstractions.Indexing;
-using Raven.Client.AspNetProviders.Indexes;
 using Raven.Client.Document;
 using System;
 using System.Collections.Generic;
