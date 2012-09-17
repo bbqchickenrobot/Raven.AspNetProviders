@@ -104,6 +104,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="InMemoryDocumentStoreTestBase.cs" />
+    <Compile Include="Membership\RavenMembershipProviderTestBase.cs" />
     <Compile Include="Membership\RavenMembershipProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

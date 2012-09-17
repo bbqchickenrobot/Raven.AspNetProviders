@@ -1,0 +1,42 @@
+﻿@model Raven.AspNetProviders.DemoApp.Models.LoginModel
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<div class="row">
+    <div class="span6 offset3">
+        @using (Html.BeginForm("Login", "User", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+            <fieldset>
+                <legend>Login Form</legend>
+
+                <div class="control-group">
+                    @Html.LabelFor(m => m.UserName, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.UserName, new { placeholder = "User name" })
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(m => m.Password, new { placeholder = "Password" })
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(m => m.RememberMe, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.CheckBoxFor(m => m.RememberMe, new { placeholder = "Confirm password" })
+                    </div>
+                </div>
+                
+                <input type="submit" value="Login" class="btn" />
+            </fieldset>
+        }
+    </div>
+</div>

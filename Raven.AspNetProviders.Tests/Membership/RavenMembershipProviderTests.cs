@@ -11,7 +11,7 @@ using System.Web.Security;
 namespace Raven.AspNetProviders.Tests.Membership
 {
     [TestClass]
-    public class RavenMembershipProviderTests : InMemoryDocumentStoreTestBase
+    public class RavenMembershipProviderTests : RavenMembershipProviderTestBase
     {
         [TestMethod]
         public void RunRavenInMemory()
@@ -28,6 +28,8 @@ namespace Raven.AspNetProviders.Tests.Membership
             using (var store = NewEmbeddableDocumentStore())
             {
                 var provider = new RavenMembershipProvider(store);
+                provider.Initialize(Config["name"], Config);
+
                 MembershipCreateStatus status;
                 var membershipUser = provider.CreateUser(
                     "user1","password123$","user1@domain.com", null, null, true, null, out status

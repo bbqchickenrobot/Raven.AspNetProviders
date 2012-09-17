@@ -1,3 +1,7 @@
 ﻿body {
     padding-top: 60px;
 }
+
+#logoutForm {
+    margin-bottom: 0px;
+}

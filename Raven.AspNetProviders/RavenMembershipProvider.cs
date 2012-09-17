@@ -20,7 +20,6 @@ namespace Raven.AspNetProviders
     public class RavenMembershipProvider : MembershipProvider
     {
         private IDocumentStore _documentStore;
-        private string _providerName = "RavenMembershipProvider";
         private bool _requiresUniqueEmail;
         private bool _enablePasswordReset;
         private bool _enablePasswordRetrieval;
@@ -105,8 +104,6 @@ namespace Raven.AspNetProviders
         {
             if (config == null)
                 throw new ArgumentNullException("config");
-
-            _providerName = name;
 
             base.Initialize(name, config);
 
@@ -515,7 +512,7 @@ namespace Raven.AspNetProviders
             var nullDate = new DateTime(1900, 1, 1, 0, 0, 0);
 
             return new MembershipUser(
-                _providerName, user.Username, user.Id, user.Email, user.PasswordQuestion,
+                Membership.Provider.Name, user.Username, user.Id, user.Email, user.PasswordQuestion,
                 user.Comment, user.IsApproved, user.IsLockedOut, user.CreationDate,
                 user.LastLoginDate.HasValue ? user.LastLoginDate.Value : nullDate,
                 user.LastActivityDate,

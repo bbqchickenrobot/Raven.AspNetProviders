@@ -22,10 +22,39 @@
                 <ul class="nav">
                     <li>@Html.ActionLink("Home","Index")</li>
                 </ul>
-                <p class="navbar-text pull-right">
-                    <a class="navbar-link" href="@Url.Action("Login", "User")">Login</a> / 
-                    <a class="navbar-link" href="@Url.Action("Register", "User")">Register</a>
-                </p>
+                <ul class="nav pull-right">
+                    <li class="divider-vertical"></li>
+                    @if (!Request.IsAuthenticated)
+                    {
+                        <li>
+                            <a class="navbar-link" href="@Url.Action("Login", "User")">Login</a>
+                        </li>
+                        <li>
+                            <a class="navbar-link" href="@Url.Action("Register", "User")">Register</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                @User.Identity.Name
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Manage Account", "Manage", "User")</li>
+                                <li class="divider"></li>
+                                <li>
+                                    @using (Html.BeginForm("Logout", "User", FormMethod.Post, new { id = "logoutForm" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <a href="javascript:document.getElementById('logoutForm').submit()">Logout</a>
+                                    }
+                                    @*@Html.ActionLink("Logout", "Logout", "User")*@
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
             </div><!--/.nav-collapse -->
         </div>
     </div>
