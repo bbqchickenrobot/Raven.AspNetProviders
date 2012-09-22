@@ -32,7 +32,7 @@ namespace Raven.AspNetProviders
         public int FailedPasswordAnswerAttemptCount { get; set; }
         public DateTime? FailedPasswordAnswerAttemptWindowStart { get; set; }
 
-        public IList<string> Roles { get; set; }
+        public ICollection<string> Roles { get; set; }
     }
 }
 

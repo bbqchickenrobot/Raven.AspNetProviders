@@ -52,10 +52,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RavenMembershipProvider.cs" />
-    <Compile Include="RavenProfileProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenRoleProvider.cs" />
     <Compile Include="Application.cs" />
+    <Compile Include="RavenSessionStateStoreProvider.cs" />
+    <Compile Include="SessionState.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup />
