@@ -1,19 +1,16 @@
-﻿using System.Linq.Expressions;
-using Raven.Abstractions.Exceptions;
-using Raven.Abstractions.Indexing;
+﻿using Raven.AspNetProviders.Indexes;
 using Raven.Client;
 using Raven.Client.Document;
+using Raven.Client.Indexes;
+using Raven.Client.Linq;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.Security;
-using Raven.Client.Indexes;
-using Raven.Client.Linq;
 
 namespace Raven.AspNetProviders
 {
@@ -122,10 +119,9 @@ namespace Raven.AspNetProviders
                 _documentStore.Initialize();
             }
 
-            if (_documentStore.DatabaseCommands.GetIndex("Users/ByApplicationNameAndUsername") == null)
-            {
-                CreateRavenDbIndexes();
-            }
+            // create indexes
+            _documentStore.ExecuteIndex(new Users_ByApplicationNameAndUsername());
+            _documentStore.ExecuteIndex(new Users_ByApplicationNameAndEmail());
         }
 
         private void SetConfigurationProperties(NameValueCollection config)
@@ -142,44 +138,11 @@ namespace Raven.AspNetProviders
             _requiresQuestionAndAnswer = config["requiresQuestionAndAnswer"] != null && Convert.ToBoolean(config["requiresQuestionAndAnswer"]);
         }
 
-        private void CreateRavenDbIndexes()
-        {
-            _documentStore.DatabaseCommands.PutIndex("Users/ByApplicationNameAndUsername",
-                new IndexDefinitionBuilder<User>
-                {
-                    Map = users => from user in users
-                                   select new
-                                   {
-                                       user.ApplicationName,
-                                       user.Username
-                                   },
-                    Indexes = 
-                    {
-                        { x => x.Username, FieldIndexing.Analyzed } 
-                    }
-                });
-
-            _documentStore.DatabaseCommands.PutIndex("Users/ByApplicationNameAndEmail",
-                new IndexDefinitionBuilder<User>
-                {
-                    Map = users => from user in users
-                                   select new
-                                   {
-                                       user.ApplicationName,
-                                       user.Email
-                                   },
-                    Indexes = 
-                    {
-                        { x => x.Email, FieldIndexing.Analyzed } 
-                    }
-                });
-        }
-
         public override bool ChangePassword(string username, string oldPassword, string newPassword)
         {
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == username);
                 if (user != null)
@@ -202,7 +165,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == username);
                 if (user != null)
@@ -286,7 +249,7 @@ namespace Raven.AspNetProviders
             // TODO: deleteAllRelatedData
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == username);
                 if (user != null)
@@ -302,17 +265,17 @@ namespace Raven.AspNetProviders
 
         public override MembershipUserCollection FindUsersByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            return FindUsers("Users/ByApplicationNameAndEmail", x => x.Email, emailToMatch, pageIndex, pageSize, out totalRecords);
+            return FindUsers<Users_ByApplicationNameAndEmail>(x => x.Email, emailToMatch, pageIndex, pageSize, out totalRecords);
         }
 
         public override MembershipUserCollection FindUsersByName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            return FindUsers("Users/ByApplicationNameAndUsername", x => x.Username, usernameToMatch, pageIndex, pageSize, out totalRecords);
+            return FindUsers<Users_ByApplicationNameAndUsername>(x => x.Username, usernameToMatch, pageIndex, pageSize, out totalRecords);
         }
 
         public override MembershipUserCollection GetAllUsers(int pageIndex, int pageSize, out int totalRecords)
         {
-            return FindUsers("Users/ByApplicationNameAndUsername", x => x.Username, "*", pageIndex, pageSize, out totalRecords);
+            return FindUsers<Users_ByApplicationNameAndUsername>(x => x.Username, "*", pageIndex, pageSize, out totalRecords);
         }
 
         public override int GetNumberOfUsersOnline()
@@ -334,7 +297,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == username);
                 if (user != null)
@@ -369,7 +332,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                return session.Query<User>("Users/ByApplicationNameAndEmail")
+                return session.Query<User, Users_ByApplicationNameAndEmail>()
                     .Where(u => u.ApplicationName == ApplicationName && u.Email == email)
                     .Select(x => x.Username)
                     .SingleOrDefault();
@@ -385,7 +348,7 @@ namespace Raven.AspNetProviders
 
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == username);
                 if (user != null)
@@ -412,7 +375,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == userName);
                 if (user != null)
@@ -429,7 +392,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var dbUser = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var dbUser = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == user.UserName);
                 if (dbUser != null)
@@ -450,7 +413,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Customize(c => c.WaitForNonStaleResultsAsOfNow())
                     .SingleOrDefault(u => u.ApplicationName == ApplicationName && u.Username == username);
                 if (user != null && user.PasswordHash == EncodePassword(password, user.PasswordSalt))
@@ -469,12 +432,13 @@ namespace Raven.AspNetProviders
             return false;
         }
 
-        private MembershipUserCollection FindUsers(string indexName, Expression<Func<User, object>> fieldSelector, string searchTerms, int pageIndex, int pageSize, out int totalRecords) 
+        private MembershipUserCollection FindUsers<TIndex>(Expression<Func<User, object>> fieldSelector, string searchTerms, int pageIndex, int pageSize, out int totalRecords)
+            where TIndex : AbstractIndexCreationTask, new()
         {
             var membershipUsers = new MembershipUserCollection();
             using (var session = _documentStore.OpenSession())
             {
-                var users = session.Query<User>(indexName)
+                var users = session.Query<User, TIndex>()
                     .Where(x => x.ApplicationName == ApplicationName)
                     .Search(fieldSelector, searchTerms, options: SearchOptions.And);
                 totalRecords = users.Count();

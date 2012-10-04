@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web.Security;
 using Raven.Abstractions.Data;
 using Raven.Abstractions.Indexing;
+using Raven.AspNetProviders.Indexes;
 using Raven.Client;
 using Raven.Client.Document;
 using Raven.Client.Indexes;
@@ -45,10 +46,8 @@ namespace Raven.AspNetProviders
                 _documentStore.Initialize();
             }
 
-            if (_documentStore.DatabaseCommands.GetIndex("Users/ByApplicationNameAndRoleName") == null)
-            {
-                CreateRavenDbIndexes();
-            }
+            // create indexes
+            _documentStore.ExecuteIndex(new Users_ByApplicationNameAndRoleName());
         }
 
         private void SetConfigurationProperties(NameValueCollection config)
@@ -56,26 +55,11 @@ namespace Raven.AspNetProviders
             ApplicationName = string.IsNullOrEmpty(config["applicationName"]) ? System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath : config["applicationName"];
         }
 
-        private void CreateRavenDbIndexes()
-        {
-            _documentStore.DatabaseCommands.PutIndex("Users/ByApplicationNameAndRoleName",
-                new IndexDefinitionBuilder<User>
-                {
-                    Map = users => from user in users
-                                   from role in user.Roles
-                                   select new
-                                   {
-                                       user.ApplicationName,
-                                       RoleName = role
-                                   }
-                });
-        }
-
         public override void AddUsersToRoles(string[] usernames, string[] roleNames)
         {
             using (var session = _documentStore.OpenSession())
             {
-                var users = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var users = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Where(x => x.ApplicationName == ApplicationName && x.Username.In(usernames));
 
                 foreach (var user in users)
@@ -149,7 +133,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var users = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var users = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Where(x => x.ApplicationName == ApplicationName && x.Roles.Contains(roleName))
                     .Search(x => x.Username, usernameToMatch)
                     .Select(x => x.Username);
@@ -171,7 +155,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                return session.Query<User>("Users/ByApplicationNameAndUsername")
+                return session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Where(x => x.ApplicationName == ApplicationName && x.Username == username)
                     .SelectMany(x => x.Roles)
                     .ToArray();
@@ -182,7 +166,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                return session.Query<User>("Users/ByApplicationNameAndUsername")
+                return session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Where(x => x.ApplicationName == ApplicationName)
                     .Select(x => x.Username)
                     .ToArray();
@@ -193,7 +177,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var user = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var user = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .SingleOrDefault(x => x.ApplicationName == ApplicationName && x.Username == username);
                 return user != null && user.Roles.Contains(roleName);
             }
@@ -203,7 +187,7 @@ namespace Raven.AspNetProviders
         {
             using (var session = _documentStore.OpenSession())
             {
-                var users = session.Query<User>("Users/ByApplicationNameAndUsername")
+                var users = session.Query<User, Users_ByApplicationNameAndUsername>()
                     .Where(x => x.ApplicationName == ApplicationName && x.Username.In(usernames));
 
                 foreach (var user in users)

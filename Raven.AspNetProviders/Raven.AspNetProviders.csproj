@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Indexes\Users_ByApplicationNameAndRoleName.cs" />
+    <Compile Include="Indexes\Users_ByApplicationNameAndEmail.cs" />
+    <Compile Include="Indexes\Users_ByApplicationNameAndUsername.cs" />
     <Compile Include="RavenMembershipProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenRoleProvider.cs" />

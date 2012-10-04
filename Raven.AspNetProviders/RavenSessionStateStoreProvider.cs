@@ -67,11 +67,6 @@ namespace Raven.AspNetProviders
 
                 _documentStore.Initialize();
             }
-
-            if (_documentStore.DatabaseCommands.GetIndex("Users/ByApplicationNameAndUsername") == null)
-            {
-                //CreateRavenDbIndexes();
-            }
         }
 
         private void SetConfigurationProperties(NameValueCollection config)
