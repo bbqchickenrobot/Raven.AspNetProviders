@@ -79,9 +79,12 @@ namespace Raven.AspNetProviders
             using (var session = _documentStore.OpenSession())
             {
                 var app = session.Query<Application>().SingleOrDefault(x => x.Name == ApplicationName);
-                if (app != null && !app.Roles.Contains(roleName))
+                if (app != null)
                 {
-                    app.Roles.Add(roleName);
+                    if (!app.Roles.Contains(roleName))
+                    {
+                        app.Roles.Add(roleName);
+                    }
                 }
                 else
                 {
